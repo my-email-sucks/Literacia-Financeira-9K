@@ -2,7 +2,30 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: 'var(--color-bg-primary)',
+        secondary: 'var(--color-bg-secondary)',
+        tertiary: 'var(--color-bg-tertiary)',
+        muted: 'var(--color-text-tertiary)',
+        accent: 'var(--color-orange)',
+        success: 'var(--color-green)',
+        danger: 'var(--color-red)',
+      },
+      backgroundColor: {
+        primary: 'var(--color-bg-primary)',
+        secondary: 'var(--color-bg-secondary)',
+        tertiary: 'var(--color-bg-tertiary)',
+      },
+      textColor: {
+        primary: 'var(--color-text-primary)',
+        secondary: 'var(--color-text-secondary)',
+        tertiary: 'var(--color-text-tertiary)',
+      },
+      borderColor: {
+        primary: 'var(--color-border)',
+      },
+    },
   },
   plugins: [],
 };

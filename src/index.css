@@ -1,3 +1,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg-primary: #0f1419;
+    --color-bg-secondary: #1a1f27;
+    --color-bg-tertiary: #252d38;
+
+    --color-border: #3a4452;
+
+    --color-text-primary: #e5e7eb;
+    --color-text-secondary: #9ca3af;
+    --color-text-tertiary: #6b7280;
+
+    --color-orange: #ff8c00;
+    --color-orange-dark: #e67e00;
+    --color-orange-light: #ffb347;
+
+    --color-green: #10b981;
+    --color-green-dark: #059669;
+    --color-green-light: #6ee7b7;
+
+    --color-red: #ef4444;
+    --color-red-dark: #dc2626;
+    --color-red-light: #f87171;
+
+    --color-gray-700: #374151;
+    --color-gray-600: #4b5563;
+  }
+
+  html {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg p-6 transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply card hover:border-[var(--color-border)] hover:shadow-lg cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-[var(--color-orange)] text-white font-semibold rounded-lg hover:bg-[var(--color-orange-dark)] transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)] border border-[var(--color-border)] font-semibold rounded-lg hover:bg-[var(--color-border)] transition-colors duration-200;
+  }
+
+  .text-success {
+    @apply text-[var(--color-green)];
+  }
+
+  .text-danger {
+    @apply text-[var(--color-red)];
+  }
+
+  .text-warning {
+    @apply text-[var(--color-orange)];
+  }
+
+  .badge-success {
+    @apply inline-block px-3 py-1 bg-[var(--color-green)]/10 text-[var(--color-green)] rounded-full text-sm font-medium border border-[var(--color-green)]/20;
+  }
+
+  .badge-danger {
+    @apply inline-block px-3 py-1 bg-[var(--color-red)]/10 text-[var(--color-red)] rounded-full text-sm font-medium border border-[var(--color-red)]/20;
+  }
+
+  .badge-warning {
+    @apply inline-block px-3 py-1 bg-[var(--color-orange)]/10 text-[var(--color-orange)] rounded-full text-sm font-medium border border-[var(--color-orange)]/20;
+  }
+}
