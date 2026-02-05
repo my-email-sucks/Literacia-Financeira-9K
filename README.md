@@ -83,163 +83,144 @@ The optimized build will be generated in the `dist/` directory.
 MIT
 
 PLAN:
-Plan: Teen Financial Literacy Web App - "Spending Coach + Wealth Predictor"
+Plan: Teen Financial Personality Quiz & Lifetime Wealth Predictor
 
-Based on my analysis, this is a greenfield project with a basic Vite + React + TypeScript starter and configured Bolt Database connection. The database is empty and needs complete setup. I'll create a comprehensive plan to build this educational platform.
+1. Database Schema Design
 
-1. Database Foundation & Security
+    Create quiz_submissions table to store: id, full_name, email, age, class_level, timestamp, anonymous_flag
+    Create quiz_responses table with: submission_id, question_id, answer_selected, answer_weight
+    Create questions table with: id, question_text, category (impulse_control, planning, awareness, saving_habits), answer_options (JSON), weights
+    Create predictions table with: submission_id, spending_score, saving_score, personality_type, financial_trajectory_data (JSON)
+    Design predictions table to include calculated projections for each year across lifespan
+    Ensure all tables follow RLS policies for anonymity and security
 
-    Create complete Bolt Database schema with 9 tables: classes, profiles, weeks, expenses, challenges, challenge_completions, quizzes, quiz_attempts, and lesson_progress
-    Design and implement Row Level Security policies for student data isolation and teacher aggregated read access
-    Create database views for teacher dashboard: class_weekly_aggregates and class_quiz_trait_aggregates
-    Set up database functions for secure PIN hashing and validation
-    Write seed data script with 8+ challenges and 10 lesson definitions
-    Add database indexes for performance on common queries
-    Create migration file with all DDL statements
+2. Quiz Content & Flow
 
-2. Core Infrastructure & Routing
+    Create 4 demographic questions: full name (optional), school email (optional), age, class level (9k/10k/11k/12k)
+    Design 15-20 behavioral questions covering: impulse buying, planning habits, peer pressure, saving patterns, financial awareness, spending triggers, needs vs wants
+    Use weighted scoring system where each answer contributes points to spending_score and saving_score
+    Organize questions into logical sections with smooth transitions
+    Add progress indicator showing percentage completion
+    Include confirmation screen before submission showing user's responses can be reviewed
+    Implement 3-5 minute target completion time with estimated time display
 
-    Install missing dependencies: react-router-dom for routing and recharts for data visualization
-    Set up Bolt Database client singleton with environment variables
-    Create authentication context provider for PIN-based pseudonymous sessions
-    Build protected route wrapper component that checks authentication state
-    Set up React Router with all 11 routes: landing, join, onboarding, input, dashboard, learn, challenges, quiz, future, settings, teacher
-    Create global state management for user profile and session data
-    Build reusable layout components with navigation for student and teacher views
+3. Quiz Interface Design (MooMoo-Inspired)
 
-3. Authentication & Onboarding Flow
+    Use dark theme (dark gray/charcoal background) throughout site
+    Apply orange and green accent colors: green for positive financial behaviors, orange for caution/areas to improve
+    Create clean card-based layout for each question
+    Display progress bar at top with orange accent
+    Use modern typography with good hierarchy and spacing
+    Implement smooth micro-interactions and transitions
+    Add small icons next to question categories for visual interest
+    Style submit button in orange with hover effects
 
-    Build landing page with app introduction, privacy notice, and call-to-action buttons in European Portuguese
-    Create join page with form for class code, student alias, and PIN entry with validation
-    Implement PIN-based authentication service with secure session management using localStorage/sessionStorage
-    Build onboarding flow with three steps: set weekly allowance, set savings goal, choose learning goals
-    Add privacy disclaimer panel emphasizing pseudonymous data and no PII collection
-    Create profile creation API calls to Bolt Database with initial user settings
-    Build welcome confirmation screen after successful onboarding
+4. Scoring & Prediction Algorithm
 
-4. Weekly Expense Tracking System
+    Calculate spending_score (0-100): Sum weighted answers related to impulse spending, peer pressure, materialism
+    Calculate saving_score (0-100): Sum weighted answers related to planning, goal-setting, delayed gratification
+    Create financial trajectory model: base starting from age at quiz, project 70-80 years forward
+    Generate yearly wealth projections using formula: previous_year_wealth + (annual_income × saving_ratio) - (annual_expenses × spending_ratio)
+    Create three scenarios:
+        Current trajectory: Based directly on user's quiz answers
+        Normal/Median trajectory: Based on statistical teen spending/saving behavior
+        Potential trajectory: If user adopts recommended financial behaviors
+    Assign personality type: Big Spender, Balanced Saver, Super Saver, Impulse Buyer, Goal Setter, etc.
+    Generate personalized psychology-of-money tips based on personality type and score combinations
 
-    Build weekly input page with date picker for week selection
-    Create expense entry form with category dropdown, amount input, need/want toggle, optional note field, and date picker
-    Implement dynamic expense list with add, edit, and delete functionality
-    Add "sample data" generator button for demo purposes with realistic teen spending patterns
-    Build income/allowance entry field for the selected week
-    Create scoring calculation engine that computes: savings rate, wants share, category concentration, impulse proxy, and challenge bonus
-    Implement save functionality that writes week record, expenses, and computed metrics to Bolt Database
-    Add validation to prevent duplicate week entries and ensure data integrity
+5. Results Dashboard - Lifetime Projection
 
-5. Student Analytics Dashboard
+    Create main results page with dark MooMoo aesthetic
+    Display user's personality type prominently with icon and description
+    Build primary graph showing spending vs saving trajectory:
+        X-axis: Years (from current age to 80 years old)
+        Y-axis: Accumulated wealth
+        Three lines: Current (orange), Normal (green), Potential (bright green)
+        Include hover tooltips showing yearly values
+        Add shaded areas under curves for visual clarity
+    Add text summary of financial behavior analysis
+    Display key spending and saving scores with progress indicators
 
-    Create dashboard layout with KPI card grid showing: weekly score, savings rate, wants percentage, saved amount, streak count, and challenges completed
-    Build time-series line chart for weekly score trend over last 12 weeks using Recharts
-    Build time-series line chart for savings trend showing saved amount per week
-    Create pie or bar chart for spending by category distribution
-    Build expandable "Why this score?" panel that breaks down the 5 scoring components with visual breakdown
-    Create deterministic tips engine that analyzes latest metrics and generates 3 actionable tips in teen-friendly Portuguese
-    Add empty state for new users with prompts to enter first week
-    Implement data fetching from Bolt Database with loading and error states
+6. Final Wealth Comparison Graph
 
-6. Educational Lessons Module
+    Create larger, prominent secondary visualization showing end-of-life wealth:
+        Compare three scenarios side by side with bars or circular gauges
+        Current Trajectory: Orange bar showing projected final wealth
+        Normal Trajectory: Green bar showing typical peer outcome
+        Potential Trajectory: Bright Green bar showing optimized financial behavior result
+        Display exact numbers and percentage differences
+        Show potential wealth gain if switching from Current to Potential trajectory
+    Use MooMoo's multi-chart approach with various visualizations (bars, numbers, percentages)
 
-    Create lesson listing page showing all 10 lessons with completion indicators
-    Build lesson detail view with formatted text content, images/icons, and quiz section
-    Write all 10 lesson texts in European Portuguese paraphrasing Psychology of Money concepts for teens
-    Create 2 multiple-choice questions per lesson with 4 options each and correct answer marking
-    Build quiz answer submission and immediate feedback with explanation
-    Implement lesson progress tracking in database with timestamps
-    Add navigation between lessons with next/previous buttons
-    Create progress indicator showing completed lessons count
+7. Educational Psychology of Money Insights
 
-7. Challenges & Gamification
+    Generate 4-6 personalized tips based on user's personality type and scores
+    Topics covered: impulse control, peer pressure resistance, goal setting, compound interest power, budgeting basics, long-term thinking
+    Display tips as expandable cards with icons and color coding (green for strengths, orange for growth areas)
+    Include specific actionable advice like: "Start with saving 10% of weekly allowance" or "Set a 24-hour rule before purchases over $20"
+    Add surprising statistics comparing their behavior to peers
+    Include motivational context about how small changes compound over decades
+    Reference psychology principles: loss aversion, present bias, social proof, mental accounting
 
-    Design and write 8+ challenges with clear completion criteria: track spending 3 weeks in a row, save above goal, reduce wants share, try zero-spend day, complete 5 lessons, review last month, plan next week, achieve 80+ score
-    Build challenges listing page with card layout showing title, description, status, and completion date
-    Create challenge completion detection logic that runs when weekly data is saved
-    Implement automatic challenge_completions record creation with timestamp
-    Add challenge completion contribution to weekly score calculation
-    Build badge/achievement display component for completed challenges
-    Create celebratory modal or notification when challenge is completed
+8. Visual Design & Branding
 
-8. Financial Personality Quiz
+    Apply dark gray/charcoal background throughout (matching MooMoo)
+    Use orange (#FF6B35 or similar) for primary CTAs, important metrics, caution indicators
+    Use green (#2ECC71 or similar) for positive financial behavior, gains, recommended actions
+    Use white or light gray text for clarity on dark backgrounds
+    Implement modern rounded corners on cards and buttons (12-16px border-radius)
+    Add subtle animations and transitions for graph rendering
+    Create consistent spacing using 8px or 16px grid
+    Use professional sans-serif typography (Inter, Roboto, or similar)
+    Add subtle shadows for depth and card separation
 
-    Build quiz page with 12-16 multiple-choice questions covering patience, planning, impulse control, and risk awareness
-    Create quiz scoring algorithm that outputs 4 trait scores from 0-100 based on answer patterns
-    Design quiz questions in European Portuguese with teen-relevant scenarios
-    Implement quiz submission that stores attempt with trait scores in database
-    Create results page showing trait breakdown with visual bars and explanations
-    Build retake functionality that updates to latest quiz results
-    Add link from quiz results to wealth predictor dashboard
+9. Technical Implementation
 
-9. Wealth Predictor Simulation Dashboard
-
-    Build future dashboard that fetches latest quiz traits and last 4 weeks of metrics
-    Create three slider inputs: income growth rate, interest rate, and spending inflation rate with labeled ranges
-    Implement projection algorithm that simulates balance over 1, 5, and 10 year horizons using quiz-adjusted savings behavior
-    Build bar chart showing projected balance at three time horizons
-    Create behavior impact contributions bar chart showing relative impact of savings rate, wants control, consistency, and planning
-    Design KPI tiles showing saver personality type, projected 5-year balance, and best improvement lever
-    Build detailed explainability panel that lists all assumptions, input values used, and calculation formula explanation
-    Add real-time recalculation when sliders change with instant chart updates
-    Include educational disclaimer that this is a simplified simulation for learning purposes
-
-10. User Settings & Data Controls
-
-    Build settings page with sections for privacy, data export, and account deletion
-    Create data export function that generates JSON file with all user data
-    Implement account deletion with confirmation modal that hard deletes or anonymizes all user records
-    Add privacy information panel explaining what data is collected and how it's used
-    Build demo mode toggle that adds sample data for exploration
-    Create weekly allowance and savings goal update form
-    Add learning goals modification option
-
-11. Teacher Dashboard & Admin Features
-
-    Build teacher landing page with class creation form that generates unique class code
-    Create role detection logic based on teacher flag in profiles table
-    Build aggregated analytics view showing class-level metrics over time
-    Create line chart for average weekly score across all students by week
-    Build line chart for average savings rate trend for the class
-    Create bar chart for average wants share across the class
-    Build trait aggregates display showing average quiz scores for patience, planning, impulse control, and risk awareness
-    Create challenge completion rate summary table
-    Add week range selector to filter aggregated data
-    Implement privacy-preserving aggregation that requires minimum 3 students before showing data
-    Build class roster view showing only aliases and join dates without drilling into individual records
-
-12. UI Components & Portuguese Localization
-
-    Create reusable KPI card component with icon, label, value, and trend indicator
-    Build chart wrapper components with consistent styling and responsive behavior
-    Create form input components: text input, select dropdown, number input, toggle switch, date picker
-    Design modal component for confirmations and alerts
-    Build notification/toast system for success and error messages
-    Write all UI strings in European Portuguese including labels, buttons, placeholders, validation messages, empty states, and tooltips
-    Create consistent color scheme avoiding purple/indigo tones unless requested
-    Implement responsive layouts that work on mobile, tablet, and desktop
-    Add loading skeletons for async data fetching
-    Build error boundary components for graceful error handling
-
-13. Scoring & Tips Logic Implementation
-
-    Implement weekly scoring function with 5 components: savings rate (0-35 points), needs vs wants balance (0-25 points), category concentration (0-15 points), impulse proxy based on transaction count (0-15 points), and challenge completion bonus (0-10 points)
-    Create score breakdown object that shows points earned in each category
-    Build deterministic tips engine with rule-based logic: check if savings rate below goal, check if wants share above 60%, check for single category dominance, check for high transaction count, check for low streak
-    Write 15+ tip templates in conversational European Portuguese teen language
-    Implement tip prioritization that selects 3 most relevant tips based on current metrics
-    Add metric calculation functions for all derived values: savings rate, wants share, category distribution, streak count
-
-14. Documentation & Deployment Preparation
-
-    Write comprehensive README in European Portuguese covering project overview, target users, and educational goals
-    Document Bolt Database setup instructions including project creation and environment variable configuration
-    Include complete database migration SQL with table definitions, RLS policies, views, and seed data
-    Document scoring model formula with detailed breakdown and point allocation explanation
-    Explain wealth predictor simulation assumptions and calculation methodology
-    Provide local development setup instructions with npm install and dev server commands
-    Add environment variables template file
-    Document privacy and safety features implemented
-    Include teacher dashboard access instructions
+    Build welcome screen component with quiz overview
+    Create quiz question component with answer selection and validation
+    Implement results calculation service to generate trajectories and scores
+    Build Recharts visualizations for lifetime projection and final wealth comparison
+    Create insights generation service based on personality type
+    Implement API calls to Bolt Database for storing responses
+    Add error handling and loading states with MooMoo-style spinners
+    Ensure responsive design for mobile and desktop viewing
+    Optimize graphs for performance with data aggregation
 
 Summary
 
-This plan builds a complete educational financial literacy platform for Portuguese teens with privacy-first design. The implementation follows a logical sequence starting with database foundation, moving through authentication and core features, then adding educational content, gamification, and teacher tools. The wealth predictor provides explainable simulations tied to behavioral traits and actual spending patterns. All content will be in European Portuguese with teen-appropriate language, and the scoring system uses transparent, rule-based logic that students can understand and act upon.
+This plan creates a sophisticated yet quick financial literacy tool for teens that combines a 3-5 minute anonymous quiz with compelling lifetime financial projections. Using the modern MooMoo trading platform aesthetic, users will see how their current financial behaviors compound over 70+ years, visualized in two powerful graphs: a trajectory showing spending/saving patterns over their lifetime and a final wealth comparison showing current vs potential outcomes. Personalized psychology-of-money insights provide actionable guidance grounded in behavioral economics. The dark theme with orange and green accents creates a professional, trustworthy appearance while making financial data engaging and easy to understand.
+Core Visual Characteristics I'm Committing To:
+
+    Dark, Professional Aesthetic
+        Deep charcoal/dark gray backgrounds (not pure black)
+        Creates a premium, serious financial platform feel
+        Reduces eye strain while maintaining sophistication
+        Signals "this is serious money/data territory"
+
+    Color Palette - Very Specific
+        Orange as primary action/highlight color - conveys energy, importance, calls-to-action (buttons, warnings, key metrics)
+        Green for positive metrics, gains, and recommended behaviors - represents growth and financial health
+        Red for losses/areas of concern - standard financial warning color
+        White/light gray text for readability on dark backgrounds
+        These three colors CARRY MEANING - orange = action, green = good, red = caution
+
+    Data Visualization Philosophy
+        Multiple sophisticated charts and graphs working together
+        Clean, information-dense layouts with clear hierarchy
+        Charts with multiple data series (your three wealth trajectory lines)
+        Hover states and interactive elements
+        Professional, not cartoonish - serious analytics feel
+
+    Layout & Information Architecture
+        Cards and sections clearly separated on dark background
+        Multiple visualizations visible simultaneously
+        Clean spacing and breathing room
+        Top-to-bottom reading flow with progressive information reveal
+        Dashboard-style organization where data speaks for itself
+
+    Typography & Polish
+        Modern, clean sans-serif fonts
+        Strong hierarchy with clear visual weight differences
+        Small icons alongside text elements
+        Professional micro-interactions (smooth animations, not flashy)
+        Numbers and metrics displayed prominently with context

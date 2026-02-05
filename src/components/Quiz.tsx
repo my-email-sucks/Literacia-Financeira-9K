@@ -4,16 +4,24 @@ import { quizQuestions, calculateScenarios } from '../lib/quizData';
 import { saveQuizResponses, saveQuizResults } from '../lib/supabase';
 
 interface QuizProps {
-  onComplete: (sessionId: string) => void;
+  onComplete: (sessionId: string, responses: Record<string, number | string>) => void;
 }
 
 export function Quiz({ onComplete }: QuizProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [responses, setResponses] = useState<Record<string, number>>({});
+  const [responses, setResponses] = useState<Record<string, number | string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const currentQuestion = quizQuestions[currentStep];
   const progress = ((currentStep + 1) / quizQuestions.length) * 100;
+  const isNameQuestion = currentQuestion.id === 'name';
+
+  const handleTextInput = (value: string) => {
+    setResponses({
+      ...responses,
+      [currentQuestion.id]: value,
+    });
+  };
 
   const handleAnswer = (value: number) => {
     setResponses({
@@ -42,7 +50,16 @@ export function Quiz({ onComplete }: QuizProps) {
     setIsLoading(true);
     try {
       const sessionId = `session_${Date.now()}`;
-      const scenarios = calculateScenarios(responses);
+
+      // Convert responses to numeric for calculation (excluding name)
+      const numericResponses: Record<string, number> = {};
+      Object.entries(responses).forEach(([key, value]) => {
+        if (typeof value === 'number') {
+          numericResponses[key] = value;
+        }
+      });
+
+      const scenarios = calculateScenarios(numericResponses);
 
       await saveQuizResponses(sessionId, responses);
       await saveQuizResults(
@@ -53,24 +70,39 @@ export function Quiz({ onComplete }: QuizProps) {
         scenarios.profile
       );
 
-      onComplete(sessionId);
+      onComplete(sessionId, responses);
     } catch (error) {
       console.error('Error saving quiz results:', error);
       setIsLoading(false);
     }
   };
 
-  const isAnswered = responses[currentQuestion.id] !== undefined;
+  const isAnswered = responses[currentQuestion.id] !== undefined && responses[currentQuestion.id] !== '';
   const isComplete = Object.keys(responses).length === quizQuestions.length;
+
+  const categoryLabels: Record<string, string> = {
+    personal: 'Informação Pessoal',
+    behavior: 'Comportamento Financeiro',
+    investment: 'Perfil de Investimento',
+    psychology: 'Psicologia Financeira',
+    financial: 'Saúde Financeira',
+  };
 
   return (
     <div className="min-h-screen bg-primary flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-2xl">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-primary">Financial Profile Quiz</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-primary">Perfil Financeiro</h1>
+              {currentQuestion.category && (
+                <p className="text-sm text-secondary mt-1">
+                  {categoryLabels[currentQuestion.category]}
+                </p>
+              )}
+            </div>
             <span className="text-sm text-secondary">
-              {currentStep + 1} of {quizQuestions.length}
+              {currentStep + 1} de {quizQuestions.length}
             </span>
           </div>
           <div className="w-full h-2 bg-tertiary rounded-full overflow-hidden">
@@ -91,21 +123,31 @@ export function Quiz({ onComplete }: QuizProps) {
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            {currentQuestion.answers.map((answer, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleAnswer(answer.value)}
-                className={`p-4 rounded-lg border-2 transition-all text-left font-medium ${
-                  responses[currentQuestion.id] === answer.value
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-border bg-bg-secondary text-primary hover:border-accent/50'
-                }`}
-              >
-                {answer.text}
-              </button>
-            ))}
-          </div>
+          {isNameQuestion ? (
+            <input
+              type="text"
+              placeholder="Introduza o seu nome completo"
+              value={(responses[currentQuestion.id] as string) || ''}
+              onChange={(e) => handleTextInput(e.target.value)}
+              className="w-full p-4 rounded-lg border-2 border-border bg-bg-secondary text-primary placeholder-gray-700 focus:outline-none focus:border-accent transition-colors"
+            />
+          ) : (
+            <div className="grid grid-cols-1 gap-3">
+              {currentQuestion.answers.map((answer, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleAnswer(answer.value)}
+                  className={`p-4 rounded-lg border-2 transition-all text-left font-medium ${
+                    responses[currentQuestion.id] === answer.value
+                      ? 'border-accent bg-accent/10 text-accent'
+                      : 'border-border bg-bg-secondary text-primary hover:border-accent/50'
+                  }`}
+                >
+                  {answer.text}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between gap-4">
@@ -119,7 +161,7 @@ export function Quiz({ onComplete }: QuizProps) {
             }`}
           >
             <ChevronLeft size={20} />
-            Previous
+            Anterior
           </button>
 
           {currentStep === quizQuestions.length - 1 && isComplete ? (
@@ -130,7 +172,7 @@ export function Quiz({ onComplete }: QuizProps) {
                 isLoading ? 'bg-accent/50 cursor-not-allowed' : 'btn-primary'
               }`}
             >
-              {isLoading ? 'Calculating...' : 'View Results'}
+              {isLoading ? 'Calculando...' : 'Ver Resultados'}
             </button>
           ) : (
             <button
@@ -142,7 +184,7 @@ export function Quiz({ onComplete }: QuizProps) {
                   : 'btn-primary'
               }`}
             >
-              Next
+              Seguinte
               <ChevronRight size={20} />
             </button>
           )}
