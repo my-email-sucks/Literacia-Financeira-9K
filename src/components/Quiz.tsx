@@ -129,7 +129,7 @@ export function Quiz({ onComplete }: QuizProps) {
               placeholder="Introduza o seu nome completo"
               value={(responses[currentQuestion.id] as string) || ''}
               onChange={(e) => handleTextInput(e.target.value)}
-              className="w-full p-4 rounded-lg border-2 border-border bg-bg-secondary text-primary placeholder-gray-700 focus:outline-none focus:border-accent transition-colors"
+              className="w-full p-4 rounded-lg border-2 border-primary bg-secondary text-primary placeholder-secondary focus:outline-none focus:border-accent transition-colors"
             />
           ) : (
             <div className="grid grid-cols-1 gap-3">
@@ -140,7 +140,7 @@ export function Quiz({ onComplete }: QuizProps) {
                   className={`p-4 rounded-lg border-2 transition-all text-left font-medium ${
                     responses[currentQuestion.id] === answer.value
                       ? 'border-accent bg-accent/10 text-accent'
-                      : 'border-border bg-bg-secondary text-primary hover:border-accent/50'
+                      : 'border-primary bg-secondary text-primary hover:border-accent/50'
                   }`}
                 >
                   {answer.text}
