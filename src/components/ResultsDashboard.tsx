@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, Award, Target, BarChart3, LineChart as LineChartIcon, Sparkles } from 'lucide-react';
+import { TrendingUp, Award, Target, BarChart3, LineChart as LineChartIcon, Sparkles, Zap } from 'lucide-react';
 import { getQuizResults } from '../lib/supabase';
-import { calculateScenarios } from '../lib/quizData';
+import { calculateScenarios, calculateTotalPoints, getPointsGroup, PointsGroup } from '../lib/quizData';
 import {
   AreaChart,
   Area,
@@ -33,6 +33,8 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
   const [isLoading, setIsLoading] = useState(true);
   const [successScore, setSuccessScore] = useState(0);
   const [studentAge, setStudentAge] = useState(16);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [pointsGroup, setPointsGroup] = useState<PointsGroup | null>(null);
 
   useEffect(() => {
     const loadResults = async () => {
@@ -50,9 +52,13 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
           const scenarios = calculateScenarios(numericResponses);
           setSuccessScore(scenarios.successScore);
 
-          const age = numericResponses.age || 2;
-          const calcAge = age === 1 ? 15 : age === 2 ? 16 : age === 3 ? 17 : age === 4 ? 18 : 19;
+          const age = numericResponses.age || 3;
+          const calcAge = age === 1 ? 12 : age === 2 ? 13 : age === 3 ? 14 : age === 4 ? 15 : age === 5 ? 16 : age === 6 ? 17 : 18;
           setStudentAge(calcAge);
+
+          const points = calculateTotalPoints(numericResponses);
+          setTotalPoints(points);
+          setPointsGroup(getPointsGroup(points));
         }
       } catch (error) {
         console.error('Error loading results:', error);
@@ -226,6 +232,76 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
             Fazer Novamente
           </button>
         </div>
+
+        {pointsGroup && (
+          <div
+            className="card mb-12 relative overflow-hidden border-2"
+            style={{
+              backgroundColor: pointsGroup.color + '15',
+              borderColor: pointsGroup.color + '50',
+            }}
+          >
+            <div className="absolute top-0 right-0 w-80 h-80 opacity-5 rounded-full blur-3xl -mr-40 -mt-40" style={{ backgroundColor: pointsGroup.color }}></div>
+            <div className="relative">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Zap size={32} style={{ color: pointsGroup.color }} />
+                    <div>
+                      <h3 className="text-3xl font-bold text-primary">{pointsGroup.title}</h3>
+                      <p className="text-lg font-semibold" style={{ color: pointsGroup.color }}>
+                        {pointsGroup.name}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-secondary text-lg leading-relaxed mb-3">{pointsGroup.message}</p>
+                  <p className="text-secondary mb-4">{pointsGroup.subMessage}</p>
+
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <p className="text-primary font-bold mb-3">Dicas para ti:</p>
+                    <ul className="space-y-2">
+                      {pointsGroup.tips.map((tip, idx) => (
+                        <li key={idx} className="text-secondary flex gap-2">
+                          <span className="font-bold min-w-fit">•</span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-4 md:min-w-max">
+                  <div
+                    className="w-40 h-40 rounded-full flex flex-col items-center justify-center border-4 shadow-2xl relative"
+                    style={{
+                      backgroundColor: pointsGroup.color + '20',
+                      borderColor: pointsGroup.color,
+                      boxShadow: `0 0 30px ${pointsGroup.color}40`,
+                    }}
+                  >
+                    <div className="text-6xl mb-2">{pointsGroup.emoji}</div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold" style={{ color: pointsGroup.color }}>
+                        {totalPoints}
+                      </div>
+                      <div className="text-sm text-secondary font-medium">pontos</div>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-800 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(totalPoints / 60) * 100}%`,
+                        backgroundColor: pointsGroup.color,
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-secondary">Máximo: 60 pontos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {successScore > 0 && (
           <div className="card bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-2 border-accent/30 mb-12 relative overflow-hidden">

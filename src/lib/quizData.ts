@@ -22,11 +22,13 @@ export const quizQuestions: QuizQuestion[] = [
     question: 'Que ano estás?',
     category: 'personal',
     answers: [
-      { text: '9º ano', value: 1 },
-      { text: '10º ano', value: 2 },
-      { text: '11º ano', value: 3 },
-      { text: '12º ano', value: 4 },
-      { text: 'Já acabei o secundário', value: 5 },
+      { text: '7º ano', value: 1 },
+      { text: '8º ano', value: 2 },
+      { text: '9º ano', value: 3 },
+      { text: '10º ano', value: 4 },
+      { text: '11º ano', value: 5 },
+      { text: '12º ano', value: 6 },
+      { text: 'Já acabei o secundário', value: 7 },
     ],
   },
   {
@@ -193,6 +195,127 @@ export const quizQuestions: QuizQuestion[] = [
   },
 ];
 
+export interface PointsGroup {
+  name: string;
+  emoji: string;
+  minPoints: number;
+  maxPoints: number;
+  color: string;
+  title: string;
+  message: string;
+  subMessage: string;
+  tips: string[];
+}
+
+export const pointsGroups: PointsGroup[] = [
+  {
+    name: 'Aprendiz Financeiro',
+    emoji: '🌱',
+    minPoints: 0,
+    maxPoints: 30,
+    color: '#ef4444',
+    title: 'Há muito para aprender!',
+    message: 'Estás no início da tua jornada financeira. O dinheiro ainda não é uma prioridade no teu dia a dia.',
+    subMessage: 'A boa notícia? Tens TODO o tempo do mundo para mudar! Começa pequeno e verás como faz diferença.',
+    tips: [
+      'Tenta poupar €2-5 por semana - é um ótimo início!',
+      'Quando vires algo que queres, espera 3 dias antes de comprar',
+      'Pede a alguém para te ensinar sobre dinheiro',
+    ],
+  },
+  {
+    name: 'Poupador Iniciante',
+    emoji: '📚',
+    minPoints: 31,
+    maxPoints: 50,
+    color: '#f97316',
+    title: 'Bom começo!',
+    message: 'Tens alguns hábitos bons, mas ainda há muito por melhorar. Consegues ver o valor de poupar.',
+    subMessage: 'Estás na direção certa! Foca em ser mais consistente com os teus objetivos.',
+    tips: [
+      'Aumenta a tua poupança para €10+ por semana',
+      'Define um objetivo claro (ex: "quero €200 até Junho")',
+      'Evita gastos por impulso - faz uma lista antes de comprar',
+    ],
+  },
+  {
+    name: 'Poupador Solid',
+    emoji: '🎯',
+    minPoints: 51,
+    maxPoints: 65,
+    color: '#ff8c00',
+    title: 'Tens bons hábitos!',
+    message: 'Equilibras bem entre poupar e gastar. Tens disciplina e pensas no futuro.',
+    subMessage: 'Estás acima da média! Continua com esta atitude e vais longe.',
+    tips: [
+      'Experimenta o método 50/30/20: 50% necessidades, 30% vontades, 20% poupança',
+      'Começa a pensar em objetivos de médio prazo (1-2 anos)',
+      'Ensina os teus amigos o que aprendeste sobre finanças',
+    ],
+  },
+  {
+    name: 'Poupador Star',
+    emoji: '⭐',
+    minPoints: 66,
+    maxPoints: 80,
+    color: '#10b981',
+    title: 'Excelente!',
+    message: 'Tens hábitos financeiros excecionais para a tua idade. Resistis bem à pressão e pensas no longo prazo.',
+    subMessage: 'Estás muito acima da média! Com esta atitude, vais construir riqueza ao longo da vida.',
+    tips: [
+      'Aprende sobre investimentos simples (ETFs, fundos de investimento)',
+      'Define objetivos de longo prazo (ex: €5000 aos 18 anos)',
+      'Continua a resistir à pressão social e mantém o foco',
+    ],
+  },
+  {
+    name: 'Génio das Finanças',
+    emoji: '🚀',
+    minPoints: 81,
+    maxPoints: 100,
+    color: '#06b6d4',
+    title: 'Sensacional!',
+    message: 'Tens os melhores hábitos financeiros que podemos imaginar. Estás pronto para objetivos ambiciosos!',
+    subMessage: 'Rare! Tens uma vantagem ENORME sobre a maioria das pessoas. O teu futuro é brilhante!',
+    tips: [
+      'Cria um plano de investimento personalizado com juros compostos',
+      'Pensa em como ganhar mais dinheiro (negócio, skills, trabalho)',
+      'Torna-te um mentor para outros jovens - compartilha o que sabes',
+    ],
+  },
+];
+
+export function calculateTotalPoints(responses: Record<string, number>): number {
+  const questionIds = [
+    'current_savings',
+    'spending_discipline',
+    'peer_pressure',
+    'future_thinking',
+    'financial_knowledge',
+    'social_media',
+    'part_time_job',
+    'lunch_money',
+    'financial_goals',
+    'money_talks',
+    'big_purchase',
+    'birthday_money',
+  ];
+
+  let totalPoints = 0;
+  questionIds.forEach((id) => {
+    const value = responses[id] || 0;
+    totalPoints += value;
+  });
+
+  return totalPoints;
+}
+
+export function getPointsGroup(totalPoints: number): PointsGroup {
+  return pointsGroups.find(
+    (group) => totalPoints >= group.minPoints && totalPoints <= group.maxPoints
+  ) || pointsGroups[0];
+}
+
 export function calculateScenarios(
   responses: Record<string, number>
 ): {
@@ -202,8 +325,8 @@ export function calculateScenarios(
   profile: string;
   successScore: number;
 } {
-  const age = responses.age || 2;
-  const studentAge = age === 1 ? 15 : age === 2 ? 16 : age === 3 ? 17 : age === 4 ? 18 : 19;
+  const age = responses.age || 3;
+  const studentAge = age === 1 ? 12 : age === 2 ? 13 : age === 3 ? 14 : age === 4 ? 15 : age === 5 ? 16 : age === 6 ? 17 : 18;
   const yearsUntilRetirement = 65 - studentAge;
 
   const behavioralFactors = {
