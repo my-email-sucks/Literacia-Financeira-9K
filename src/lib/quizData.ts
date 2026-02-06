@@ -9,257 +9,186 @@ export interface QuizQuestion {
   }[];
 }
 
-export interface PersonalInfo {
-  name: string;
-  age: number;
-  education: string;
-  occupation: string;
-  socialClass: string;
-  yearsWorking: number;
-  familyBackground: string;
-}
-
 export const quizQuestions: QuizQuestion[] = [
   {
     id: 'name',
-    question: 'Qual é o seu nome completo?',
+    question: 'Qual é o teu nome?',
+    description: 'Opcional - podes deixar em branco se preferires!',
     category: 'personal',
     answers: [],
   },
   {
     id: 'age',
-    question: 'Qual é a sua idade?',
+    question: 'Que ano estás?',
     category: 'personal',
     answers: [
-      { text: '18-25 anos', value: 1 },
-      { text: '26-35 anos', value: 2 },
-      { text: '36-45 anos', value: 3 },
-      { text: '46-55 anos', value: 4 },
-      { text: '56+ anos', value: 5 },
+      { text: '9º ano', value: 1 },
+      { text: '10º ano', value: 2 },
+      { text: '11º ano', value: 3 },
+      { text: '12º ano', value: 4 },
+      { text: 'Já acabei o secundário', value: 5 },
     ],
   },
   {
-    id: 'education',
-    question: 'Qual é o seu nível de educação?',
+    id: 'weekly_money',
+    question: 'Quanto dinheiro recebes por semana? (semanada, mesada, trabalho part-time)',
     category: 'personal',
     answers: [
-      { text: 'Ensino Básico', value: 1 },
-      { text: 'Ensino Secundário', value: 2 },
-      { text: 'Licenciatura', value: 3 },
-      { text: 'Mestrado', value: 4 },
-      { text: 'Doutorado/Pós-graduação', value: 5 },
-    ],
-  },
-  {
-    id: 'occupation',
-    question: 'Qual é a sua profissão/setor de atividade?',
-    category: 'personal',
-    answers: [
-      { text: 'Sector público/Funcionário', value: 2 },
-      { text: 'Sector privado - Técnico', value: 2 },
-      { text: 'Sector privado - Gestão', value: 3 },
-      { text: 'Profissional autónomo/Negócios próprios', value: 4 },
-      { text: 'Diretor executivo/Empreendedor', value: 5 },
-    ],
-  },
-  {
-    id: 'years_working',
-    question: 'Há quantos anos trabalha?',
-    category: 'personal',
-    answers: [
-      { text: 'Menos de 2 anos', value: 1 },
-      { text: '2-5 anos', value: 2 },
-      { text: '5-10 anos', value: 3 },
-      { text: '10-20 anos', value: 4 },
-      { text: 'Mais de 20 anos', value: 5 },
-    ],
-  },
-  {
-    id: 'family_background',
-    question: 'Como caracteriza a situação financeira da sua família durante a sua infância?',
-    category: 'personal',
-    answers: [
-      { text: 'Muito difícil/Dificuldades económicas', value: 1 },
-      { text: 'Difícil/Rendimento baixo', value: 2 },
-      { text: 'Confortável/Classe média', value: 3 },
-      { text: 'Boa/Classe média alta', value: 4 },
-      { text: 'Muito boa/Abastada', value: 5 },
+      { text: 'Não recebo nada regular', value: 1 },
+      { text: '€5-€15 por semana', value: 2 },
+      { text: '€15-€30 por semana', value: 3 },
+      { text: '€30-€50 por semana', value: 4 },
+      { text: 'Mais de €50 por semana', value: 5 },
     ],
   },
   {
     id: 'current_savings',
-    question: 'Qual é a sua taxa de poupança atual (% do rendimento)?',
+    question: 'Quando recebes dinheiro (aniversário, Natal, semanada), o que fazes normalmente?',
     category: 'behavior',
     answers: [
-      { text: 'Poupo menos de 10%', value: 1 },
-      { text: 'Poupo 10-20%', value: 2 },
-      { text: 'Poupo 20-30%', value: 3 },
-      { text: 'Poupo 30-40%', value: 4 },
-      { text: 'Poupo mais de 40%', value: 5 },
+      { text: 'Gasto tudo rapidamente', value: 1 },
+      { text: 'Gasto a maior parte, guardo um bocadinho', value: 2 },
+      { text: 'Gasto metade, guardo metade', value: 3 },
+      { text: 'Guardo a maior parte, gasto só um bocadinho', value: 4 },
+      { text: 'Guardo quase tudo para objetivos futuros', value: 5 },
     ],
   },
   {
     id: 'spending_discipline',
-    question: 'Como descreve o seu comportamento de gastos?',
-    description: 'Baseado na psicologia do comportamento financeiro',
+    question: 'Quando vês algo que queres comprar (roupa, jogos, snacks), o que fazes?',
+    description: 'Sê honesto - não há respostas certas ou erradas!',
     category: 'behavior',
     answers: [
-      { text: 'Gasto por impulso, tenho dificuldade em controlar', value: 1 },
-      { text: 'Gasto mais do que deveria regularmente', value: 2 },
-      { text: 'Equilibro bem as despesas com o rendimento', value: 3 },
-      { text: 'Controlo bem os meus gastos', value: 4 },
-      { text: 'Sou muito disciplinado, planejo cada euro', value: 5 },
+      { text: 'Compro imediatamente sem pensar muito', value: 1 },
+      { text: 'Normalmente compro, mas depois arrependo-me às vezes', value: 2 },
+      { text: 'Penso um bocadinho e depois decido', value: 3 },
+      { text: 'Espero alguns dias para ter a certeza que quero', value: 4 },
+      { text: 'Faço uma lista de prós e contras antes de comprar', value: 5 },
     ],
   },
   {
-    id: 'market_experience',
-    question: 'Qual é a sua experiência com investimentos?',
-    category: 'investment',
-    answers: [
-      { text: 'Nenhuma experiência', value: 1 },
-      { text: 'Iniciante - Alguns conhecimentos básicos', value: 2 },
-      { text: 'Intermédio - Invisto regularmente', value: 3 },
-      { text: 'Avançado - Opero ativamente', value: 4 },
-      { text: 'Especialista - Investidor profissional', value: 5 },
-    ],
-  },
-  {
-    id: 'risk_tolerance',
-    question: 'Como descreveria a sua tolerância ao risco?',
-    description: 'Psicologia: Como reage face à volatilidade?',
-    category: 'investment',
-    answers: [
-      { text: 'Muito conservador - Prefiro segurança', value: 1 },
-      { text: 'Conservador - Crescimento modesto com risco baixo', value: 2 },
-      { text: 'Moderado - Equilíbrio entre crescimento e segurança', value: 3 },
-      { text: 'Agressivo - Aceito volatilidade para crescimento', value: 4 },
-      { text: 'Muito agressivo - Maximizar crescimento', value: 5 },
-    ],
-  },
-  {
-    id: 'panic_reaction',
-    question: 'Se os seus investimentos caíssem 30% repentinamente, o que faria?',
-    description: 'Teste psicológico: Controlo emocional',
+    id: 'peer_pressure',
+    question: 'Os teus amigos querem ir todos ao cinema/comer fora, mas tu estavas a poupar. O que fazes?',
     category: 'psychology',
     answers: [
-      { text: 'Vendo imediatamente por medo de perder mais', value: 1 },
-      { text: 'Fico muito preocupado e considero vender', value: 2 },
-      { text: 'Mantenho-me neutro e observo', value: 3 },
-      { text: 'Considero uma oportunidade de compra', value: 4 },
-      { text: 'Compro mais - Grandes oportunidades em baixas', value: 5 },
+      { text: 'Vou sempre, não quero ficar de fora', value: 1 },
+      { text: 'Vou na maior parte das vezes', value: 2 },
+      { text: 'Às vezes vou, às vezes não', value: 3 },
+      { text: 'Sugiro alternativas mais baratas', value: 4 },
+      { text: 'Explico que estou a poupar e não vou', value: 5 },
     ],
   },
   {
-    id: 'long_term_patience',
-    question: 'Como descreve a sua capacidade de manter investimentos a longo prazo?',
-    description: 'Baseado em "The Psychology of Money" - paciência financeira',
+    id: 'future_thinking',
+    question: 'Imagina que tens €100. O que preferes?',
+    description: 'Teste de pensamento a longo prazo',
     category: 'psychology',
     answers: [
-      { text: 'Tenho dificuldade em esperar, quero resultados rápidos', value: 1 },
-      { text: 'Fico impaciente com pouco progresso', value: 2 },
-      { text: 'Consigo esperar alguns anos', value: 3 },
-      { text: 'Sou paciente e piso firme a longo prazo', value: 4 },
-      { text: 'Excelente capacidade de aguardar décadas', value: 5 },
+      { text: '€100 agora para gastar como quiser', value: 1 },
+      { text: '€120 daqui a 1 mês', value: 2 },
+      { text: '€150 daqui a 6 meses', value: 3 },
+      { text: '€200 daqui a 1 ano', value: 4 },
+      { text: '€500 daqui a 3 anos', value: 5 },
+    ],
+  },
+  {
+    id: 'big_purchase',
+    question: 'Estavas a poupar para umas sapatilhas fixes que custam €80. Só tens €60. O que fazes?',
+    description: 'Teste de controlo de impulsos',
+    category: 'behavior',
+    answers: [
+      { text: 'Peço dinheiro emprestado aos pais/amigos', value: 1 },
+      { text: 'Compro outras sapatilhas mais baratas agora', value: 2 },
+      { text: 'Espero mais um mês até ter o dinheiro todo', value: 3 },
+      { text: 'Espero por saldos/promoções', value: 4 },
+      { text: 'Reavalio se realmente preciso delas', value: 5 },
+    ],
+  },
+  {
+    id: 'birthday_money',
+    question: 'Recebeste €50 no teu aniversário. Qual é o teu primeiro pensamento?',
+    category: 'psychology',
+    answers: [
+      { text: 'Que fixe! Vou gastá-lo este fim de semana!', value: 1 },
+      { text: 'Vou comprar aquela coisa que eu queria', value: 2 },
+      { text: 'Vou guardar um bocado e gastar um bocado', value: 3 },
+      { text: 'Vou poupar para algo maior que quero', value: 4 },
+      { text: 'Vou investir/poupar para o futuro', value: 5 },
     ],
   },
   {
     id: 'financial_knowledge',
-    question: 'Qual é o seu nível de conhecimento financeiro?',
-    description: 'Como avalia a sua literacia financeira?',
+    question: 'O que sabes sobre "juros compostos"?',
+    description: 'Teste de conhecimento financeiro básico',
     category: 'psychology',
     answers: [
-      { text: 'Muito baixo - Tenho muitas dúvidas básicas', value: 1 },
-      { text: 'Baixo - Conheço pouco', value: 2 },
-      { text: 'Moderado - Compreendo conceitos principais', value: 3 },
-      { text: 'Bom - Tenho conhecimento sólido', value: 4 },
-      { text: 'Excelente - Domino conceitos avançados', value: 5 },
+      { text: 'Nunca ouvi falar', value: 1 },
+      { text: 'Já ouvi mas não sei o que é', value: 2 },
+      { text: 'Sei mais ou menos - tem a ver com dinheiro crescer', value: 3 },
+      { text: 'Sei bem - é quando ganhas juros sobre juros', value: 4 },
+      { text: 'Domino o conceito e sei como funciona', value: 5 },
     ],
   },
   {
-    id: 'peer_influence',
-    question: 'O seu círculo social influencia as suas decisões financeiras?',
-    description: 'Psicologia social: Influência do grupo',
+    id: 'social_media',
+    question: 'Vês influencers nas redes sociais com coisas fixes. Como te sentes?',
+    description: 'Influência das redes sociais nos gastos',
     category: 'psychology',
     answers: [
-      { text: 'Muito - Sigo o que os outros fazem', value: 1 },
-      { text: 'Bastante - Tenho influência', value: 2 },
-      { text: 'Moderadamente - Ouço mas decido independentemente', value: 3 },
-      { text: 'Pouco - Faço as minhas escolhas', value: 4 },
-      { text: 'Nenhuma - Sou completamente independente', value: 5 },
+      { text: 'Quero comprar as mesmas coisas imediatamente', value: 1 },
+      { text: 'Fico com vontade de ter essas coisas', value: 2 },
+      { text: 'Acho giro mas não afeta os meus gastos', value: 3 },
+      { text: 'Não me influencia, tenho as minhas prioridades', value: 4 },
+      { text: 'Reconheço que é marketing e ignoro', value: 5 },
     ],
   },
   {
-    id: 'initial_investment',
-    question: 'Quanto planeia investir inicialmente?',
-    category: 'investment',
+    id: 'part_time_job',
+    question: 'Se tivesses um part-time e ganhasses €200/mês, o que farias?',
+    category: 'financial',
     answers: [
-      { text: '€1.000 - €5.000', value: 1 },
-      { text: '€5.000 - €25.000', value: 2 },
-      { text: '€25.000 - €100.000', value: 3 },
-      { text: '€100.000 - €500.000', value: 4 },
-      { text: '€500.000+', value: 5 },
+      { text: 'Gastava tudo em coisas que quero', value: 1 },
+      { text: 'Gastava a maior parte, guardava €20-50', value: 2 },
+      { text: 'Dividia: metade para gastar, metade para poupar', value: 3 },
+      { text: 'Guardava €100-150, gastava o resto', value: 4 },
+      { text: 'Guardava quase tudo (€150+) para objetivos grandes', value: 5 },
     ],
   },
   {
-    id: 'time_horizon',
-    question: 'Qual é o seu horizonte temporal de investimento?',
-    category: 'investment',
+    id: 'lunch_money',
+    question: 'Tens €5 para o almoço na escola. Como gastas?',
+    category: 'behavior',
     answers: [
-      { text: 'Menos de 1 ano', value: 1 },
-      { text: '1-3 anos', value: 2 },
-      { text: '3-7 anos', value: 3 },
-      { text: '7-15 anos', value: 4 },
-      { text: '15+ anos', value: 5 },
-    ],
-  },
-  {
-    id: 'monthly_contribution',
-    question: 'Quanto consegue investir mensalmente?',
-    category: 'investment',
-    answers: [
-      { text: '€0 - €500', value: 1 },
-      { text: '€500 - €1.500', value: 2 },
-      { text: '€1.500 - €5.000', value: 3 },
-      { text: '€5.000 - €15.000', value: 4 },
-      { text: '€15.000+', value: 5 },
+      { text: 'Gasto tudo em comida/snacks que gosto', value: 1 },
+      { text: 'Gasto €4-5, às vezes sobra algo', value: 2 },
+      { text: 'Gasto €3-4, guardo €1-2', value: 3 },
+      { text: 'Trago comida de casa e guardo os €5', value: 4 },
+      { text: 'Trago comida e invisto o dinheiro poupado', value: 5 },
     ],
   },
   {
     id: 'financial_goals',
-    question: 'Qual é o seu objetivo financeiro principal?',
-    category: 'investment',
+    question: 'Tens um objetivo financeiro para os próximos anos?',
+    category: 'financial',
     answers: [
-      { text: 'Preservação de capital', value: 1 },
-      { text: 'Rendimento estável', value: 2 },
-      { text: 'Crescimento moderado', value: 3 },
-      { text: 'Crescimento agressivo', value: 4 },
-      { text: 'Maximizar riqueza', value: 5 },
+      { text: 'Não penso nisso, vivo o presente', value: 1 },
+      { text: 'Gostava de ter dinheiro mas não tenho plano', value: 2 },
+      { text: 'Quero poupar mas ainda não comecei', value: 3 },
+      { text: 'Estou a poupar para algo específico', value: 4 },
+      { text: 'Tenho objetivos claros e plano para alcançá-los', value: 5 },
     ],
   },
   {
-    id: 'debt_status',
-    question: 'Qual é a sua situação de endividamento?',
-    description: 'Importante preditor de sucesso financeiro',
-    category: 'financial',
+    id: 'money_talks',
+    question: 'Com que frequência falas sobre dinheiro com a tua família/amigos?',
+    description: 'Comunicação sobre finanças',
+    category: 'behavior',
     answers: [
-      { text: 'Muito endividado (>50% dos ativos)', value: 1 },
-      { text: 'Moderadamente (25-50% dos ativos)', value: 2 },
-      { text: 'Algum endividamento (10-25%)', value: 3 },
-      { text: 'Pouco endividado (<10%)', value: 4 },
-      { text: 'Sem dívidas', value: 5 },
-    ],
-  },
-  {
-    id: 'emergency_fund',
-    question: 'Tem um fundo de emergência?',
-    description: 'Hábito financeiro crucial de segurança',
-    category: 'financial',
-    answers: [
-      { text: 'Não tenho nenhum', value: 1 },
-      { text: 'Tenho menos de 1 mês de despesas', value: 2 },
-      { text: 'Tenho 1-3 meses de despesas', value: 3 },
-      { text: 'Tenho 3-6 meses de despesas', value: 4 },
-      { text: 'Tenho mais de 6 meses guardados', value: 5 },
+      { text: 'Nunca, é tabu', value: 1 },
+      { text: 'Raramente', value: 2 },
+      { text: 'Às vezes, quando necessário', value: 3 },
+      { text: 'Frequentemente, pergunto conselhos', value: 4 },
+      { text: 'Muito, aprendo sobre dinheiro ativamente', value: 5 },
     ],
   },
 ];
@@ -273,132 +202,67 @@ export function calculateScenarios(
   profile: string;
   successScore: number;
 } {
-  // Extract key behavioral factors
+  const age = responses.age || 2;
+  const studentAge = age === 1 ? 15 : age === 2 ? 16 : age === 3 ? 17 : age === 4 ? 18 : 19;
+  const yearsUntilRetirement = 65 - studentAge;
+
   const behavioralFactors = {
     spendingDiscipline: responses.spending_discipline || 3,
     savingsRate: responses.current_savings || 2,
-    emotionalControl: responses.panic_reaction || 3,
-    patience: responses.long_term_patience || 3,
+    peerPressure: (6 - (responses.peer_pressure || 3)),
+    futureThinking: responses.future_thinking || 3,
     financialKnowledge: responses.financial_knowledge || 2,
-    peerInfluence: (6 - (responses.peer_influence || 3)), // Inverted: lower is better
+    socialMediaResistance: responses.social_media || 3,
   };
 
-  // Personal background factors (predictors of wealth)
-  const backgroundFactors = {
-    education: responses.education || 2,
-    familyBackground: responses.family_background || 2,
-    yearsWorking: responses.years_working || 2,
-    age: responses.age || 2,
-  };
-
-  // Financial health factors
-  const financialHealth = {
-    debtStatus: responses.debt_status || 3,
-    emergencyFund: responses.emergency_fund || 2,
-  };
-
-  // Calculate behavioral score (highest predictor of wealth)
   const behavioralScore = (
     behavioralFactors.spendingDiscipline * 0.25 +
     behavioralFactors.savingsRate * 0.25 +
-    behavioralFactors.emotionalControl * 0.20 +
-    behavioralFactors.patience * 0.15 +
+    behavioralFactors.peerPressure * 0.15 +
+    behavioralFactors.futureThinking * 0.15 +
     behavioralFactors.financialKnowledge * 0.10 +
-    behavioralFactors.peerInfluence * 0.05
-  ) / 5;
-
-  // Calculate background score
-  const backgroundScore = (
-    backgroundFactors.education * 0.30 +
-    backgroundFactors.familyBackground * 0.25 +
-    backgroundFactors.yearsWorking * 0.25 +
-    backgroundFactors.age * 0.20
-  ) / 5;
-
-  // Calculate financial health score
-  const healthScore = (
-    financialHealth.debtStatus * 0.6 +
-    financialHealth.emergencyFund * 0.4
-  ) / 5;
-
-  // Combined success score (predictor of investment success)
-  const successScore = (
-    behavioralScore * 0.50 +
-    backgroundScore * 0.25 +
-    healthScore * 0.25
+    behavioralFactors.socialMediaResistance * 0.10
   );
 
-  // Risk tolerance from responses
-  const riskTolerance = responses.risk_tolerance || 3;
-  const investmentExperience = responses.market_experience || 2;
+  const successScore = Math.round((behavioralScore / 5) * 100);
 
-  // Adjust rate multipliers based on behavioral score and risk tolerance
-  const rateAdjustment = (successScore - 3) * 0.015; // -0.03 to +0.03 adjustment
+  const weeklyMoney = responses.weekly_money || 2;
+  const monthlyIncome =
+    weeklyMoney === 1 ? 20 : weeklyMoney === 2 ? 40 : weeklyMoney === 3 ? 100 : weeklyMoney === 4 ? 160 : 250;
 
-  const conservativeRate = Math.max(0.02, 0.04 + rateAdjustment);
-  const moderateRate = Math.max(0.04, 0.07 + rateAdjustment);
-  const aggressiveRate = Math.max(0.06, 0.11 + rateAdjustment);
+  const savingsRatePercent = behavioralScore / 5;
+  const monthlySavings = monthlyIncome * savingsRatePercent;
 
-  // Investment parameters
-  const initialInvestment =
-    responses.initial_investment === 1
-      ? 3000
-      : responses.initial_investment === 2
-        ? 15000
-        : responses.initial_investment === 3
-          ? 62500
-          : responses.initial_investment === 4
-            ? 300000
-            : 500000;
+  const startingCapital = 0;
 
-  const monthlyContribution =
-    responses.monthly_contribution === 1
-      ? 250
-      : responses.monthly_contribution === 2
-        ? 1000
-        : responses.monthly_contribution === 3
-          ? 3250
-          : responses.monthly_contribution === 4
-            ? 10000
-            : 15000;
+  let profile = 'balanced';
+  if (behavioralScore < 2.5) profile = 'conservative';
+  else if (behavioralScore < 3) profile = 'moderate-conservative';
+  else if (behavioralScore < 3.5) profile = 'balanced';
+  else if (behavioralScore < 4) profile = 'growth';
+  else profile = 'aggressive';
 
-  const years =
-    responses.time_horizon === 1
-      ? 0.5
-      : responses.time_horizon === 2
-        ? 2
-        : responses.time_horizon === 3
-          ? 5
-          : responses.time_horizon === 4
-            ? 10
-            : 20;
+  const conservativeRate = 0.04;
+  const moderateRate = 0.07;
+  const aggressiveRate = 0.10;
 
-  const futureValue = (principal: number, rate: number, years: number, monthlyPayment: number) => {
-    if (years === 0) return principal + monthlyPayment * 12;
+  const futureValue = (monthlyPayment: number, rate: number, years: number) => {
+    if (years === 0) return 0;
     const monthlyRate = rate / 12;
     const months = years * 12;
-    const compoundedPrincipal = principal * Math.pow(1 + monthlyRate, months);
     const annuityValue = monthlyPayment * (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate;
-    return compoundedPrincipal + annuityValue;
+    return annuityValue;
   };
 
-  const conservative = futureValue(initialInvestment, conservativeRate, years, monthlyContribution);
-  const moderate = futureValue(initialInvestment, moderateRate, years, monthlyContribution);
-  const aggressive = futureValue(initialInvestment, aggressiveRate, years, monthlyContribution);
-
-  // Determine profile based on behavioral score and risk tolerance
-  let profile = 'balanced';
-  if (behavioralScore < 2.5 || riskTolerance <= 1) profile = 'conservative';
-  else if (behavioralScore < 3 || riskTolerance === 2) profile = 'moderate-conservative';
-  else if (behavioralScore < 3.5 || riskTolerance === 3) profile = 'balanced';
-  else if (behavioralScore < 4 || riskTolerance === 4) profile = 'growth';
-  else profile = 'aggressive';
+  const conservative = futureValue(monthlySavings * 0.8, conservativeRate, yearsUntilRetirement);
+  const moderate = futureValue(monthlySavings, moderateRate, yearsUntilRetirement);
+  const aggressive = futureValue(monthlySavings * 1.2, aggressiveRate, yearsUntilRetirement);
 
   return {
     conservative: Math.round(conservative),
     moderate: Math.round(moderate),
     aggressive: Math.round(aggressive),
     profile,
-    successScore: Math.round((successScore / 5) * 100),
+    successScore,
   };
 }

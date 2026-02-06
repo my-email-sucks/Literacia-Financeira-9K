@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, Award, Target, BarChart3, LineChart as LineChartIcon } from 'lucide-react';
+import { TrendingUp, Award, Target, BarChart3, LineChart as LineChartIcon, Sparkles } from 'lucide-react';
 import { getQuizResults } from '../lib/supabase';
 import { calculateScenarios } from '../lib/quizData';
 import {
@@ -32,8 +32,7 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
   const [results, setResults] = useState<QuizResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [successScore, setSuccessScore] = useState(0);
-  const [initialInvestment, setInitialInvestment] = useState(0);
-  const [timeHorizon, setTimeHorizon] = useState(10);
+  const [studentAge, setStudentAge] = useState(16);
 
   useEffect(() => {
     const loadResults = async () => {
@@ -51,29 +50,9 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
           const scenarios = calculateScenarios(numericResponses);
           setSuccessScore(scenarios.successScore);
 
-          const investmentValue =
-            numericResponses.initial_investment === 1
-              ? 3000
-              : numericResponses.initial_investment === 2
-                ? 15000
-                : numericResponses.initial_investment === 3
-                  ? 62500
-                  : numericResponses.initial_investment === 4
-                    ? 300000
-                    : 500000;
-          setInitialInvestment(investmentValue);
-
-          const years =
-            numericResponses.time_horizon === 1
-              ? 0.5
-              : numericResponses.time_horizon === 2
-                ? 2
-                : numericResponses.time_horizon === 3
-                  ? 5
-                  : numericResponses.time_horizon === 4
-                    ? 10
-                    : 20;
-          setTimeHorizon(Math.ceil(years));
+          const age = numericResponses.age || 2;
+          const calcAge = age === 1 ? 15 : age === 2 ? 16 : age === 3 ? 17 : age === 4 ? 18 : 19;
+          setStudentAge(calcAge);
         }
       } catch (error) {
         console.error('Error loading results:', error);
@@ -90,7 +69,7 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
       <div className="min-h-screen bg-primary flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-secondary text-lg">Calculando o seu perfil financeiro...</div>
+          <div className="text-secondary text-lg">A calcular o teu futuro financeiro...</div>
         </div>
       </div>
     );
@@ -105,11 +84,19 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
   }
 
   const profileLabels: Record<string, string> = {
-    conservative: 'Investidor Conservador',
-    'moderate-conservative': 'Conservador Moderado',
-    balanced: 'Investidor Equilibrado',
-    growth: 'Orientado para Crescimento',
-    aggressive: 'Investidor Agressivo',
+    conservative: 'Poupador Cauteloso',
+    'moderate-conservative': 'Equilibrado Cauteloso',
+    balanced: 'Financeiramente Equilibrado',
+    growth: 'Orientado para o Futuro',
+    aggressive: 'Super Poupador',
+  };
+
+  const profileDescriptions: Record<string, string> = {
+    conservative: 'Preferes segurança e poupanças estáveis. És cuidadoso com o dinheiro.',
+    'moderate-conservative': 'Equilibras bem segurança e crescimento. Tens bons hábitos financeiros.',
+    balanced: 'Tens uma abordagem equilibrada ao dinheiro. Sabes quando poupar e quando gastar.',
+    growth: 'Pensas no futuro e tomas decisões inteligentes. Excelente potencial financeiro!',
+    aggressive: 'És um génio das finanças! Tens hábitos excepcionais e grande visão de futuro.',
   };
 
   const formatCurrency = (value: number) => {
@@ -132,21 +119,26 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
 
   const generateProjectionData = () => {
     const data = [];
-    const years = Math.max(timeHorizon, 5);
+    const retirementAge = 65;
+    const years = retirementAge - studentAge;
+    const milestones = [0, 5, 10, 20, 30, 40, years];
 
-    for (let year = 0; year <= years; year++) {
-      const conservativeGrowth = initialInvestment * Math.pow(1.04, year);
-      const moderateGrowth = initialInvestment * Math.pow(1.07, year);
-      const aggressiveGrowth = initialInvestment * Math.pow(1.11, year);
+    milestones.forEach((yearOffset) => {
+      if (yearOffset > years) return;
+      const currentAge = studentAge + yearOffset;
+
+      const conservativeValue = (results.conservative_outcome / Math.pow(1.04, years)) * Math.pow(1.04, yearOffset);
+      const moderateValue = (results.moderate_outcome / Math.pow(1.07, years)) * Math.pow(1.07, yearOffset);
+      const aggressiveValue = (results.aggressive_outcome / Math.pow(1.10, years)) * Math.pow(1.10, yearOffset);
 
       data.push({
-        year: year === 0 ? 'Hoje' : `Ano ${year}`,
-        yearNum: year,
-        Conservadora: Math.round(conservativeGrowth),
-        Moderada: Math.round(moderateGrowth),
-        Agressiva: Math.round(aggressiveGrowth),
+        year: yearOffset === 0 ? 'Hoje' : `${currentAge} anos`,
+        yearNum: yearOffset,
+        Cautelosa: Math.round(conservativeValue),
+        Equilibrada: Math.round(moderateValue),
+        Ambiciosa: Math.round(aggressiveValue),
       });
-    }
+    });
 
     return data;
   };
@@ -155,24 +147,24 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
 
   const comparisonData = [
     {
-      name: 'Conservadora',
+      name: 'Cautelosa',
       value: results.conservative_outcome,
       fill: '#10b981',
     },
     {
-      name: 'Moderada',
+      name: 'Equilibrada',
       value: results.moderate_outcome,
       fill: '#ff8c00',
     },
     {
-      name: 'Agressiva',
+      name: 'Ambiciosa',
       value: results.aggressive_outcome,
       fill: '#ef4444',
     },
   ];
 
   const potentialGain = results.aggressive_outcome - results.conservative_outcome;
-  const percentageGain = ((potentialGain / results.conservative_outcome) * 100).toFixed(1);
+  const percentageGain = ((potentialGain / results.conservative_outcome) * 100).toFixed(0);
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -202,24 +194,36 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
     return null;
   };
 
+  const getSuccessEmoji = (score: number) => {
+    if (score >= 80) return '🌟';
+    if (score >= 60) return '🎯';
+    if (score >= 40) return '📈';
+    return '🌱';
+  };
+
+  const getSuccessMessage = (score: number) => {
+    if (score >= 80) return 'Excelente! Tens hábitos incríveis!';
+    if (score >= 60) return 'Muito bom! Estás no caminho certo!';
+    if (score >= 40) return 'Bom começo! Há margem para melhorar!';
+    return 'Vamos trabalhar nisso juntos!';
+  };
+
   return (
     <div className="min-h-screen bg-primary px-4 py-12">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-12">
           <div>
-            <h1 className="text-5xl font-bold text-primary mb-3">O Seu Perfil Financeiro</h1>
-            <div className="flex items-center gap-3">
+            <h1 className="text-5xl font-bold text-primary mb-3">O Teu Futuro Financeiro</h1>
+            <div className="flex items-center gap-3 mb-2">
               <Target className="text-accent" size={24} />
               <p className="text-secondary text-xl">
-                Perfil Recomendado: <span className="text-accent font-bold">{profileLabels[results.recommended_profile]}</span>
+                Perfil: <span className="text-accent font-bold">{profileLabels[results.recommended_profile]}</span>
               </p>
             </div>
+            <p className="text-secondary text-lg ml-9">{profileDescriptions[results.recommended_profile]}</p>
           </div>
-          <button
-            onClick={onReset}
-            className="btn-secondary whitespace-nowrap"
-          >
-            Repetir Questionário
+          <button onClick={onReset} className="btn-secondary whitespace-nowrap">
+            Fazer Novamente
           </button>
         </div>
 
@@ -229,91 +233,77 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
             <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <Award className="text-accent" size={28} />
-                  <h3 className="text-2xl font-bold text-primary">Índice de Sucesso Financeiro</h3>
+                  <Sparkles className="text-accent" size={28} />
+                  <h3 className="text-2xl font-bold text-primary">A Tua Pontuação de Hábitos Financeiros</h3>
                 </div>
-                <p className="text-secondary">
-                  Baseado em comportamentos e hábitos financeiros comprovados por estudos de psicologia financeira
+                <p className="text-secondary text-lg">
+                  Esta pontuação mostra como os teus hábitos de hoje vão impactar o teu futuro. Baseada em estudos de psicologia financeira!
                 </p>
               </div>
               <div className="flex items-center gap-6">
                 <div className="w-32 h-32 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center border-4 border-accent/50 shadow-lg">
                   <div className="text-center">
                     <div className="text-4xl font-bold text-accent">{successScore}%</div>
-                    <div className="text-sm text-secondary font-medium">
-                      {successScore >= 80 ? 'Excelente' : successScore >= 60 ? 'Bom' : 'Em Desenvolvimento'}
-                    </div>
+                    <div className="text-sm text-secondary font-medium">{getSuccessEmoji(successScore)}</div>
                   </div>
+                </div>
+                <div className="hidden md:block">
+                  <p className="text-xl font-bold text-accent mb-1">{getSuccessMessage(successScore)}</p>
+                  <p className="text-secondary text-sm">
+                    {successScore >= 70
+                      ? 'Continua assim e vais longe!'
+                      : 'Pequenas mudanças = grandes resultados!'}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-          <div className="card hover:border-success/50 transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-primary">Conservadora</h3>
-              <div className="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center group-hover:bg-success/20 transition-all">
-                <TrendingUp size={24} className="text-success" />
-              </div>
-            </div>
-            <p className="text-4xl font-bold text-success mb-3">
-              {formatCurrency(results.conservative_outcome)}
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-success"></div>
-                <p className="text-secondary text-sm">4% rentabilidade anual</p>
-              </div>
-              <p className="text-secondary text-sm">
-                Preservação de capital com crescimento estável
-              </p>
-            </div>
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-primary mb-3">Como Os Teus Hábitos Te Podem Levar a...</h2>
+            <p className="text-secondary text-lg">Projeções aos 65 anos, começando com os teus hábitos atuais</p>
           </div>
 
-          <div className="card border-2 border-accent shadow-lg shadow-accent/10 hover:shadow-accent/20 transition-all duration-300 group relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl"></div>
-            <div className="relative">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="card hover:border-success/50 transition-all duration-300 group">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-primary">Moderada</h3>
-                <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center group-hover:bg-accent/30 transition-all">
-                  <BarChart3 size={24} className="text-accent" />
+                <h3 className="text-lg font-bold text-primary">Abordagem Cautelosa</h3>
+                <div className="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center group-hover:bg-success/20 transition-all">
+                  <TrendingUp size={24} className="text-success" />
                 </div>
               </div>
-              <p className="text-4xl font-bold text-accent mb-3">
-                {formatCurrency(results.moderate_outcome)}
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-accent"></div>
-                  <p className="text-secondary text-sm">7% rentabilidade anual</p>
-                </div>
-                <p className="text-secondary text-sm">
-                  Equilíbrio ideal entre crescimento e segurança
-                </p>
-              </div>
+              <p className="text-4xl font-bold text-success mb-3">{formatCurrency(results.conservative_outcome)}</p>
+              <p className="text-secondary text-sm">Poupança segura e constante. Crescimento estável e previsível.</p>
             </div>
-          </div>
 
-          <div className="card hover:border-danger/50 transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-primary">Agressiva</h3>
-              <div className="w-12 h-12 bg-danger/10 rounded-xl flex items-center justify-center group-hover:bg-danger/20 transition-all">
-                <LineChartIcon size={24} className="text-danger" />
+            <div className="card border-2 border-accent shadow-lg shadow-accent/10 hover:shadow-accent/20 transition-all duration-300 group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-primary">Abordagem Equilibrada</h3>
+                  <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center group-hover:bg-accent/30 transition-all">
+                    <BarChart3 size={24} className="text-accent" />
+                  </div>
+                </div>
+                <p className="text-4xl font-bold text-accent mb-3">{formatCurrency(results.moderate_outcome)}</p>
+                <div className="bg-accent/10 border border-accent/20 rounded-lg px-3 py-2 inline-block mb-2">
+                  <span className="text-accent font-bold text-sm">RECOMENDADO PARA TI</span>
+                </div>
+                <p className="text-secondary text-sm">Equilíbrio perfeito entre poupar e aproveitar a vida.</p>
               </div>
             </div>
-            <p className="text-4xl font-bold text-danger mb-3">
-              {formatCurrency(results.aggressive_outcome)}
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-danger"></div>
-                <p className="text-secondary text-sm">11% rentabilidade anual</p>
+
+            <div className="card hover:border-danger/50 transition-all duration-300 group">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-primary">Abordagem Ambiciosa</h3>
+                <div className="w-12 h-12 bg-danger/10 rounded-xl flex items-center justify-center group-hover:bg-danger/20 transition-all">
+                  <LineChartIcon size={24} className="text-danger" />
+                </div>
               </div>
-              <p className="text-secondary text-sm">
-                Crescimento máximo com volatilidade elevada
-              </p>
+              <p className="text-4xl font-bold text-danger mb-3">{formatCurrency(results.aggressive_outcome)}</p>
+              <p className="text-secondary text-sm">Poupança máxima e investimentos inteligentes. Requer disciplina!</p>
             </div>
           </div>
         </div>
@@ -321,113 +311,78 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
         <div className="card mb-12">
           <div className="flex items-center gap-3 mb-6">
             <LineChartIcon className="text-accent" size={28} />
-            <h2 className="text-3xl font-bold text-primary">Projeção de Crescimento ao Longo do Tempo</h2>
+            <h2 className="text-3xl font-bold text-primary">A Tua Jornada Financeira</h2>
           </div>
-          <p className="text-secondary mb-8">
-            Visualize como o seu investimento inicial de {formatCurrency(initialInvestment)} crescerá ao longo de {timeHorizon} anos com cada estratégia
+          <p className="text-secondary mb-8 text-lg">
+            Vê como pequenas decisões hoje se transformam em grande riqueza ao longo da vida. Isto é o poder dos juros compostos!
           </p>
 
           <div className="bg-[var(--color-bg-tertiary)] rounded-xl p-6 border border-[var(--color-border)]">
             <ResponsiveContainer width="100%" height={400}>
               <AreaChart data={projectionData}>
                 <defs>
-                  <linearGradient id="colorConservadora" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorCautelosa" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="colorModerada" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorEquilibrada" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ff8c00" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#ff8c00" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="colorAgressiva" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorAmbiciosa" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#3a4452" opacity={0.3} />
-                <XAxis
-                  dataKey="year"
-                  stroke="#9ca3af"
-                  style={{ fontSize: '12px' }}
-                  interval={Math.floor(timeHorizon / 5)}
-                />
-                <YAxis
-                  stroke="#9ca3af"
-                  style={{ fontSize: '12px' }}
-                  tickFormatter={(value) => formatCurrencyShort(value)}
-                />
+                <XAxis dataKey="year" stroke="#9ca3af" style={{ fontSize: '12px' }} />
+                <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} tickFormatter={(value) => formatCurrencyShort(value)} />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  wrapperStyle={{ paddingTop: '20px' }}
-                  iconType="line"
-                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="line" />
                 <Area
                   type="monotone"
-                  dataKey="Conservadora"
+                  dataKey="Cautelosa"
                   stroke="#10b981"
                   strokeWidth={3}
-                  fill="url(#colorConservadora)"
+                  fill="url(#colorCautelosa)"
                   animationDuration={1500}
                 />
                 <Area
                   type="monotone"
-                  dataKey="Moderada"
+                  dataKey="Equilibrada"
                   stroke="#ff8c00"
                   strokeWidth={3}
-                  fill="url(#colorModerada)"
+                  fill="url(#colorEquilibrada)"
                   animationDuration={1500}
                 />
                 <Area
                   type="monotone"
-                  dataKey="Agressiva"
+                  dataKey="Ambiciosa"
                   stroke="#ef4444"
                   strokeWidth={3}
-                  fill="url(#colorAgressiva)"
+                  fill="url(#colorAmbiciosa)"
                   animationDuration={1500}
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="bg-success/5 border border-success/20 rounded-lg p-4">
-              <p className="text-success font-semibold mb-1">Retorno Conservador</p>
-              <p className="text-2xl font-bold text-success">{formatCurrency(results.conservative_outcome)}</p>
-            </div>
-            <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-              <p className="text-accent font-semibold mb-1">Retorno Moderado</p>
-              <p className="text-2xl font-bold text-accent">{formatCurrency(results.moderate_outcome)}</p>
-            </div>
-            <div className="bg-danger/5 border border-danger/20 rounded-lg p-4">
-              <p className="text-danger font-semibold mb-1">Retorno Agressivo</p>
-              <p className="text-2xl font-bold text-danger">{formatCurrency(results.aggressive_outcome)}</p>
-            </div>
           </div>
         </div>
 
         <div className="card mb-12">
           <div className="flex items-center gap-3 mb-6">
             <BarChart3 className="text-accent" size={28} />
-            <h2 className="text-3xl font-bold text-primary">Comparação Final de Riqueza</h2>
+            <h2 className="text-3xl font-bold text-primary">Comparação Final: Aos 65 Anos</h2>
           </div>
-          <p className="text-secondary mb-8">
-            Valor acumulado ao final do período de investimento com cada estratégia
+          <p className="text-secondary mb-8 text-lg">
+            A diferença entre os três caminhos pode ser ENORME. Tudo depende dos hábitos que crias AGORA!
           </p>
 
           <div className="bg-[var(--color-bg-tertiary)] rounded-xl p-6 border border-[var(--color-border)]">
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#3a4452" opacity={0.3} />
-                <XAxis
-                  dataKey="name"
-                  stroke="#9ca3af"
-                  style={{ fontSize: '14px', fontWeight: 'bold' }}
-                />
-                <YAxis
-                  stroke="#9ca3af"
-                  style={{ fontSize: '12px' }}
-                  tickFormatter={(value) => formatCurrencyShort(value)}
-                />
+                <XAxis dataKey="name" stroke="#9ca3af" style={{ fontSize: '14px', fontWeight: 'bold' }} />
+                <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} tickFormatter={(value) => formatCurrencyShort(value)} />
                 <Tooltip content={<CustomBarTooltip />} />
                 <Bar dataKey="value" radius={[8, 8, 0, 0]} animationDuration={1500}>
                   {comparisonData.map((entry, index) => (
@@ -440,159 +395,39 @@ export function ResultsDashboard({ sessionId, onReset, responses = {} }: Results
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <div className="bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/30 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-primary mb-2">Potencial de Ganho</h3>
+              <h3 className="text-xl font-bold text-primary mb-2">A Diferença</h3>
               <p className="text-4xl font-bold text-accent mb-2">{formatCurrency(potentialGain)}</p>
               <p className="text-secondary">
-                Diferença entre estratégia agressiva e conservadora (+{percentageGain}%)
+                Podes ter <span className="text-accent font-bold">{percentageGain}% mais</span> se melhorares os teus hábitos!
               </p>
             </div>
             <div className="bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-primary mb-2">Estratégia Recomendada</h3>
-              <p className="text-3xl font-bold text-success mb-2">
-                {results.recommended_profile === 'conservative' || results.recommended_profile === 'moderate-conservative'
-                  ? formatCurrency(results.conservative_outcome)
-                  : results.recommended_profile === 'aggressive'
-                    ? formatCurrency(results.aggressive_outcome)
-                    : formatCurrency(results.moderate_outcome)}
-              </p>
-              <p className="text-secondary">
-                Valor projetado com o perfil {profileLabels[results.recommended_profile]}
-              </p>
+              <h3 className="text-xl font-bold text-primary mb-2">O Teu Caminho Recomendado</h3>
+              <p className="text-3xl font-bold text-success mb-2">{formatCurrency(results.moderate_outcome)}</p>
+              <p className="text-secondary">Com o perfil {profileLabels[results.recommended_profile]}</p>
             </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-          <div className="card hover:border-success/30 transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
-                <TrendingUp size={20} className="text-success" />
-              </div>
-              <h3 className="text-xl font-bold text-primary">Conservadora</h3>
-            </div>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-success font-bold text-sm">✓</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Menor Volatilidade</p>
-                  <p className="text-secondary text-sm">Rentabilidade estável e previsível</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-success font-bold text-sm">✓</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Preservação de Capital</p>
-                  <p className="text-secondary text-sm">Proteção dos seus ativos</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-danger/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-danger font-bold text-sm">×</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Crescimento Limitado</p>
-                  <p className="text-secondary text-sm">Rentabilidade mais baixa</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div className="card border-2 border-accent shadow-lg hover:shadow-accent/20 transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
-                <BarChart3 size={20} className="text-accent" />
-              </div>
-              <h3 className="text-xl font-bold text-primary">Moderada</h3>
-            </div>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-success font-bold text-sm">✓</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Abordagem Equilibrada</p>
-                  <p className="text-secondary text-sm">Crescimento com segurança</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-success font-bold text-sm">✓</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Otimizada ao Perfil</p>
-                  <p className="text-secondary text-sm">Adaptada à tolerância ao risco</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-success font-bold text-sm">✓</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Diversificação</p>
-                  <p className="text-secondary text-sm">Risco distribuído</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div className="card hover:border-danger/30 transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-danger/10 rounded-lg flex items-center justify-center">
-                <LineChartIcon size={20} className="text-danger" />
-              </div>
-              <h3 className="text-xl font-bold text-primary">Agressiva</h3>
-            </div>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-success font-bold text-sm">✓</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Máximo Crescimento</p>
-                  <p className="text-secondary text-sm">Maior potencial de retorno</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-danger/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-danger font-bold text-sm">×</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Alta Volatilidade</p>
-                  <p className="text-secondary text-sm">Flutuações significativas</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-danger/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-danger font-bold text-sm">×</span>
-                </div>
-                <div>
-                  <p className="text-primary font-semibold">Maior Risco</p>
-                  <p className="text-secondary text-sm">Requer tolerância elevada</p>
-                </div>
-              </li>
-            </ul>
           </div>
         </div>
 
         <div className="card bg-gradient-to-br from-accent/5 to-transparent border-l-4 border-l-accent">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Target className="text-accent" size={24} />
+              <Award className="text-accent" size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-primary mb-3">Por que isto é importante</h3>
-              <p className="text-secondary leading-relaxed text-lg">
-                A sua estratégia de investimento deve estar alinhada com os seus objetivos financeiros, horizonte temporal e tolerância ao risco.
-                A estratégia recomendada para o seu perfil equilibra o potencial de crescimento com um nível de risco com o qual se sente confortável.
+              <h3 className="text-2xl font-bold text-primary mb-3">Porque é que isto importa?</h3>
+              <p className="text-secondary leading-relaxed text-lg mb-4">
+                Os hábitos financeiros que crias <span className="text-accent font-bold">AGORA</span>, na adolescência, vão moldar toda a tua vida. Estudos mostram que jovens que aprendem a poupar e investir cedo têm muito mais probabilidade de serem financeiramente independentes no futuro.
               </p>
-              <p className="text-secondary leading-relaxed text-lg mt-4">
-                Lembre-se: investir é um compromisso a longo prazo. Manter disciplina com contribuições regulares e resistir à tentação de reagir emocionalmente
-                às flutuações do mercado pode impactar significativamente a sua riqueza ao longo do tempo.
+              <p className="text-secondary leading-relaxed text-lg mb-4">
+                Não é sobre ter muito dinheiro agora. É sobre aprender a <span className="text-success font-bold">controlar impulsos</span>, <span className="text-success font-bold">pensar no futuro</span>, e <span className="text-success font-bold">tomar decisões inteligentes</span>. Estas competências vão ajudar-te em TUDO na vida!
               </p>
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 mt-4">
+                <p className="text-primary font-bold text-lg mb-2">Dica Pro:</p>
+                <p className="text-secondary">
+                  Começa pequeno: poupa €5 por semana. Em 1 ano, são €260. Com juros compostos e aumentos graduais, isso pode crescer para centenas de milhares ao longo da vida. O segredo é começar AGORA!
+                </p>
+              </div>
             </div>
           </div>
         </div>
